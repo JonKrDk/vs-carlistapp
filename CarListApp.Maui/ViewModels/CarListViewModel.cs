@@ -15,18 +15,25 @@ namespace CarListApp.Maui.ViewModels
 {
     public partial class CarListViewModel : BaseViewModel
     {
-        // private readonly CarService carService;
-        
         public ObservableCollection<Car> Cars { get; private set; } = new ObservableCollection<Car>();
 
         public CarListViewModel()
         {
             Title = "Car List";
-            // this.carService = carService;
+            GetCarList().Wait();
         }
 
         [ObservableProperty]
         bool isRefreshing;
+
+        [ObservableProperty]
+        string make;
+
+        [ObservableProperty]
+        string model;
+
+        [ObservableProperty]
+        string vin;
 
         [ICommand]
         async Task GetCarList()
@@ -63,17 +70,58 @@ namespace CarListApp.Maui.ViewModels
         }
 
         [ICommand]
-        async Task GetCarDetails(Car car)
+        async Task GetCarDetails(int id)
         {
-            if (car == null)
+            if (id == 0)
             {
                 return;
             }
 
-            await Shell.Current.GoToAsync(nameof(CarDetailsPage), true, new Dictionary<string, object>
+            await Shell.Current.GoToAsync($"{nameof(CarDetailsPage)}?Id={id}", true);
+        }
+
+        [ICommand]
+        async Task AddCar()
+        {
+            if ( string.IsNullOrEmpty(Make) || string.IsNullOrEmpty(Model) || string.IsNullOrEmpty(Vin))
             {
-                { nameof(Car), car }
-            });
+                await Shell.Current.DisplayAlert("Inavlid Data", "Please enter valid data", "Ok");
+                return;
+            }
+
+            var car = new Car
+            {
+                Make = Make,
+                Model = Model,
+                Vin = Vin
+            };
+
+            App.CarService.AddCar(car);
+
+            await Shell.Current.DisplayAlert("Information", App.CarService.StatusMessage, "Ok");
+            await GetCarList();
+        }
+
+        [ICommand]
+        async Task DeleteCar(int id)
+        {
+            if (id == 0)
+            {
+                await Shell.Current.DisplayAlert("Invalid Record", "Please try again", "Ok");
+                return;
+            }
+
+            var result = App.CarService.DeleteCar(id);
+
+            if (result == 0)
+            {
+                await Shell.Current.DisplayAlert("Failed", "Please enter valid data", "Ok");
+            }
+            else
+            {
+                await Shell.Current.DisplayAlert("Deletion Successful", "Record removed succesfully", "Ok");
+                await GetCarList();
+            }
         }
     }
 }

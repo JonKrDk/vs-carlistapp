@@ -12,6 +12,7 @@ namespace CarListApp.Maui.Services
     {
         private SQLiteConnection connection;
         private string _dbPath;
+        private int result;
 
         public string StatusMessage;
 
@@ -45,6 +46,56 @@ namespace CarListApp.Maui.Services
             }
 
             return new List<Car>();
+        }
+
+        public Car GetCar(int id)
+        {
+            try
+            {
+                Init();
+                return connection.Table<Car>().FirstOrDefault(q => q.Id == id);
+            }
+            catch (Exception exception)
+            {
+                StatusMessage = exception.Message;
+            }
+
+            return null;
+        }
+
+        public void AddCar(Car car)
+        {
+            try
+            {
+                Init();
+
+                if (car == null)
+                {
+                    throw new Exception("Invalid Car Record");
+                }
+
+                result = connection.Insert(car);
+                StatusMessage = result == 0 ? "Insert Failed" : "Insert Succeded";
+            }
+            catch (Exception)
+            {
+                StatusMessage = "Failed to Insert data.";
+            }
+        }
+
+        public int DeleteCar(int id)
+        {
+            try
+            {
+                Init();
+                return connection.Table<Car>().Delete(q => q.Id == id);
+            }
+            catch (Exception)
+            {
+                StatusMessage = "Failed to delete data";
+            }
+
+            return 0;
         }
     }
 }
