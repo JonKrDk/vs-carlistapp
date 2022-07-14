@@ -10,9 +10,10 @@ namespace CarListApp.Maui.Services
 {
     public class CarService
     {
-        private SQLiteConnection connection = null;
+        private SQLiteConnection connection;
         private string _dbPath;
-        private string StatusMessage;
+
+        public string StatusMessage;
 
         public CarService(string dbPath)
         {
@@ -21,11 +22,13 @@ namespace CarListApp.Maui.Services
 
         private void Init()
         {
-            if (connection is null)
+            if (connection != null)
             {
-                connection = new SQLiteConnection(_dbPath);
-                connection.CreateTable<Car>();
+                return;
             }
+
+            connection = new SQLiteConnection(_dbPath);
+            connection.CreateTable<Car>();
         }
 
         public List<Car> GetCars()
@@ -36,23 +39,12 @@ namespace CarListApp.Maui.Services
                 Init();
                 return connection.Table<Car>().ToList();
             }
-            catch (Exception)
+            catch (Exception exception)
             {
-                StatusMessage = "Failed to retrive data.";
+                StatusMessage = exception.Message;
             }
 
             return new List<Car>();
-
-            //return new List<Car>()
-            //{
-            //    new Car { Id = 1, Make = "Honda",   Model = "Fit",    Vin = "123" },
-            //    new Car { Id = 2, Make = "Toyota",  Model = "Prado",  Vin = "123" },
-            //    new Car { Id = 3, Make = "Honda",   Model = "Civic",  Vin = "123" },
-            //    new Car { Id = 4, Make = "Audi",    Model = "A5",     Vin = "123" },
-            //    new Car { Id = 5, Make = "BMW",     Model = "M3",     Vin = "123" },
-            //    new Car { Id = 6, Make = "Nissan",  Model = "Note",   Vin = "123" },
-            //    new Car { Id = 7, Make = "Ferrari", Model = "Spider", Vin = "123" }
-            //};
         }
     }
 }
