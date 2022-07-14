@@ -1,3 +1,6 @@
+using Microsoft.Data.Sqlite;
+using Microsoft.EntityFrameworkCore;
+
 namespace CarListApp.Api
 {
     public class Program
@@ -15,6 +18,12 @@ namespace CarListApp.Api
             builder.Services.AddCors(o => {
                 o.AddPolicy("AllowAll", a => a.AllowAnyHeader().AllowAnyOrigin().AllowAnyMethod());
             });
+
+            var dbPath = Path.Join(Directory.GetCurrentDirectory(), "carlist.db");
+            var connection = new SqliteConnection($"Data Source={dbPath}");
+
+            builder.Services.AddDbContext<CarListDbContext>(o => o.UseSqlite(connection));
+               
 
             var app = builder.Build();
 
