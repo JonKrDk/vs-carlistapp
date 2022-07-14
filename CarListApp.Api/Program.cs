@@ -19,8 +19,9 @@ namespace CarListApp.Api
                 o.AddPolicy("AllowAll", a => a.AllowAnyHeader().AllowAnyOrigin().AllowAnyMethod());
             });
 
-            var dbPath = Path.Join(Directory.GetCurrentDirectory(), "carlist.db");
-            var connection = new SqliteConnection($"Data Source={dbPath}");
+            // var dbPath = Path.Join(Directory.GetCurrentDirectory(), "carlist.db");
+            // var connection = new SqliteConnection($"Data Source={dbPath}");
+            var connection = new SqliteConnection($"Data Source=E:\\Source\\VisualStudio\\Temp\\CarListApp.Maui\\CarListApp.Api\\carlist.db");
 
             builder.Services.AddDbContext<CarListDbContext>(o => o.UseSqlite(connection));
                
@@ -28,35 +29,54 @@ namespace CarListApp.Api
             var app = builder.Build();
 
             // Configure the HTTP request pipeline.
-            if (app.Environment.IsDevelopment())
-            {
+            // if (app.Environment.IsDevelopment())
+            //{
                 app.UseSwagger();
                 app.UseSwaggerUI();
-            }
+            //}
 
             app.UseHttpsRedirection();
             app.UseCors("AllowAll");
 
             app.UseAuthorization();
 
-            var summaries = new[]
-            {
-            "Freezing", "Bracing", "Chilly", "Cool", "Mild", "Warm", "Balmy", "Hot", "Sweltering", "Scorching"
-        };
+            app.MapGet("/cars", async (CarListDbContext db) => await db.Cars.ToListAsync());
+            app.MapGet("/cars/{id}", async (int id, CarListDbContext db) => 
+                await db.Cars.FindAsync(id) is Car car ? Results.Ok(car) : Results.NotFound()
+            );
 
-            app.MapGet("/weatherforecast", (HttpContext httpContext) =>
+            app.MapPut("/cars/{id}", async (int id, Car car, CarListDbContext db) =>
             {
-                var forecast = Enumerable.Range(1, 5).Select(index =>
-                    new WeatherForecast
-                    {
-                        Date = DateTime.Now.AddDays(index),
-                        TemperatureC = Random.Shared.Next(-20, 55),
-                        Summary = summaries[Random.Shared.Next(summaries.Length)]
-                    })
-                    .ToArray();
-                return forecast;
-            })
-            .WithName("GetWeatherForecast");
+                var record = await db.Cars.FindAsync(id);
+                if (record is null) { return Results.NotFound(); }
+
+                record.Make  = car.Make;
+                record.Model = car.Model;
+                record.Vin   = car.Vin;
+
+                await db.SaveChangesAsync();
+
+                return Results.NoContent();
+            });
+
+            app.MapDelete("/cars/{id}", async (int id, CarListDbContext db) =>
+            {
+                var record = await db.Cars.FindAsync(id);
+                if (record is null) { return Results.NotFound(); }
+                db.Remove(record);
+                await db.SaveChangesAsync();
+
+                return Results.NoContent();
+            });
+
+            app.MapPost("/cars/{id}", async (int id, Car car, CarListDbContext db) =>
+            {
+                await db.AddAsync(car);
+                await db.SaveChangesAsync();
+
+                return Results.Created($"/cars/{car.Id}", car);
+            });
+
 
             app.Run();
         }
