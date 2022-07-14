@@ -12,9 +12,12 @@ namespace CarListApp.Maui.ViewModels
     public partial class BaseViewModel : ObservableObject
     {
         [ObservableProperty]
-        private string _title;
+        string title;
 
         [ObservableProperty]
-        private bool   _isBusy;
+        [AlsoNotifyChangeFor(nameof(IsNotLoading))]
+        bool   isLoading;
+
+        public bool IsNotLoading => !IsLoading;
     }
 }
