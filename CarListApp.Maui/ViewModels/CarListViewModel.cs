@@ -17,10 +17,11 @@ namespace CarListApp.Maui.ViewModels
     {
         public ObservableCollection<Car> Cars { get; private set; } = new ObservableCollection<Car>();
 
-        public CarListViewModel()
+        public CarListViewModel(CarApiService carApiService)
         {
             Title = "Car List";
             GetCarList().Wait();
+            this.carApiService = carApiService;
         }
 
         [ObservableProperty]
@@ -34,6 +35,7 @@ namespace CarListApp.Maui.ViewModels
 
         [ObservableProperty]
         string vin;
+        private readonly CarApiService carApiService;
 
         [ICommand]
         async Task GetCarList()
@@ -51,7 +53,8 @@ namespace CarListApp.Maui.ViewModels
                     Cars.Clear();
                 }
 
-                var cars = App.CarService.GetCars();
+                // var cars = App.CarService.GetCars();
+                var cars = await carApiService.GetCars();
                 foreach (var car in cars)
                 {
                     Cars.Add(car);

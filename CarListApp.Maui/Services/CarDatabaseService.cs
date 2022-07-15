@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace CarListApp.Maui.Services
 {
-    public class CarService
+    public class CarDatabaseService
     {
         private SQLiteConnection connection;
         private string _dbPath;
@@ -16,7 +16,7 @@ namespace CarListApp.Maui.Services
 
         public string StatusMessage;
 
-        public CarService(string dbPath)
+        public CarDatabaseService(string dbPath)
         {
             _dbPath = dbPath;
         }
@@ -34,7 +34,6 @@ namespace CarListApp.Maui.Services
 
         public List<Car> GetCars()
         {
-
             try
             {
                 Init();
