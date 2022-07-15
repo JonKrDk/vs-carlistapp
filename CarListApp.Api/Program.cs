@@ -21,7 +21,7 @@ namespace CarListApp.Api
 
             // var dbPath = Path.Join(Directory.GetCurrentDirectory(), "carlist.db");
             // var connection = new SqliteConnection($"Data Source={dbPath}");
-            var connection = new SqliteConnection($"Data Source=E:\\Source\\VisualStudio\\Temp\\CarListApp.Maui\\CarListApp.Api\\carlist.db");
+            var connection = new SqliteConnection($"Data Source=carlist.db");
 
             builder.Services.AddDbContext<CarListDbContext>(o => o.UseSqlite(connection));
                
@@ -69,7 +69,7 @@ namespace CarListApp.Api
                 return Results.NoContent();
             });
 
-            app.MapPost("/cars/{id}", async (int id, Car car, CarListDbContext db) =>
+            app.MapPost("/cars", async (Car car, CarListDbContext db) =>
             {
                 await db.AddAsync(car);
                 await db.SaveChangesAsync();

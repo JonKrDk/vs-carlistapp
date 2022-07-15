@@ -13,7 +13,8 @@ namespace CarListApp.Maui.Services
     {
         HttpClient _httpClient;
 
-        public static string BaseAddress = DeviceInfo.Platform == DevicePlatform.Android ? "http://10.0.2.2:8001" : "http://localhost:8001";
+        // public static string BaseAddress = DeviceInfo.Platform == DevicePlatform.Android ? "http://192.168.139.10:5262" : "http://localhost:8001";
+        public static string BaseAddress = "http://192.168.139.10:5262";
         public string StatusMessage;
 
         public CarApiService()

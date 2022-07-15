@@ -25,7 +25,7 @@
             <Entry x:Name="Vin" Placeholder="Enter Vin" Text="{Binding Vin}" />
         </VerticalStackLayout>
 
-        <Button Text="Add Car" Grid.Row="1" IsEnabled="{Binding IsNotLoading}" Command="{Binding AddCarCommand}" Margin="9" />
+        <Button Text="{Binding AddEditButtonText}" Grid.Row="1" IsEnabled="{Binding IsNotLoading}" Command="{Binding SaveCarCommand}" Margin="9" />
 
         <Button Text="Fetch Cars" Grid.Row="2" IsEnabled="{Binding IsNotLoading}" Command="{Binding GetCarListCommand}" Margin="9" />
 

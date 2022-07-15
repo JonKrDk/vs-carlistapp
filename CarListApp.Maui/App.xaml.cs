@@ -4,13 +4,13 @@ namespace CarListApp.Maui;
 
 public partial class App : Application
 {
-	public static CarDatabaseService CarService { get; private set; }
+	public static CarDatabaseService CarDatabaseService { get; private set; }
 
-	public App(CarDatabaseService carService)
+	public App(CarDatabaseService carDatabaseService)
 	{
 		InitializeComponent();
 
 		MainPage = new AppShell();
-		CarService = carService;
+		CarDatabaseService = carDatabaseService;
 	}
 }
